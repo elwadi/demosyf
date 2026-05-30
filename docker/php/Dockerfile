@@ -37,8 +37,11 @@ RUN curl -sL https://get.symfony.com/cli/installer | bash
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype 
 
 RUN docker-php-ext-install \
-    pdo pdo_mysql  pdo_pgsql zip xsl gd intl opcache exif mbstring  bcmath
+    pdo pdo_mysql  pdo_pgsql zip xsl gd intl opcache exif mbstring  bcmath 
 
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions amqp
 # Extract PHP source
 RUN docker-php-source extract
 
