@@ -16,6 +16,7 @@ final class FirstController extends AbstractController
         $product= new Product();
         $product->setName("Produit A");
         $product->setDescription("Product description");
+        $product->setPrice(1000);
 
         $managerRegistry->getManager()->persist($product);
         $managerRegistry->getManager()->flush();
