@@ -2,37 +2,32 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
+use App\Repository\PurchaseOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProductRepository::class)]
-class Product
+#[ORM\Entity(repositoryClass: PurchaseOrderRepository::class)]
+class PurchaseOrder
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 15, scale: 2)]
     private ?string $price = null;
-
-    #[ORM\ManyToOne(inversedBy: 'products')]
-    private ?Category $category = null;
 
     /**
      * @var Collection<int, PurchaseOrderLine>
      */
-    #[ORM\OneToMany(targetEntity: PurchaseOrderLine::class, mappedBy: 'product')]
+    #[ORM\OneToMany(targetEntity: PurchaseOrderLine::class, mappedBy: 'purchaseOrder')]
     private Collection $purchaseOrderLines;
+
+    #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
     public function __construct()
     {
@@ -44,50 +39,14 @@ class Product
         return $this->id;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
     public function getPrice(): ?string
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): static
+    public function setPrice(string $price): static
     {
         $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -104,7 +63,7 @@ class Product
     {
         if (!$this->purchaseOrderLines->contains($purchaseOrderLine)) {
             $this->purchaseOrderLines->add($purchaseOrderLine);
-            $purchaseOrderLine->setProduct($this);
+            $purchaseOrderLine->setPurchaseOrder($this);
         }
 
         return $this;
@@ -114,10 +73,22 @@ class Product
     {
         if ($this->purchaseOrderLines->removeElement($purchaseOrderLine)) {
             // set the owning side to null (unless already changed)
-            if ($purchaseOrderLine->getProduct() === $this) {
-                $purchaseOrderLine->setProduct(null);
+            if ($purchaseOrderLine->getPurchaseOrder() === $this) {
+                $purchaseOrderLine->setPurchaseOrder(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): static
+    {
+        $this->client = $client;
 
         return $this;
     }
