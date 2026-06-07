@@ -39,7 +39,7 @@ class ApiAuthenticator extends AbstractAuthenticator
 
         // implement your own logic to get the user identifier from `$apiToken`
         // e.g. by looking up a user in the database using its API key
-        $userIdentifier = /** ... */;
+        $userIdentifier = 1;
 
         return new SelfValidatingPassport(new UserBadge($userIdentifier));
     }
